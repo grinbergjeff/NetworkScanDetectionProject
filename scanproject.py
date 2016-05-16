@@ -12,9 +12,9 @@ from optparse import OptionParser
 # Function Declarations will appear below:
 
 # Checking to see if the analytics are to be done real-time or with log files:
-parser = OptionParser()
-parser.add_option("--online", action="store_true", dest="realTime", default=False)
-
+def checkIfRealTime():
+	parser = OptionParser()
+	parser.add_option("--online", action="store_true", dest="realTime", default=False)
 
 
 
@@ -24,3 +24,5 @@ parser.add_option("--online", action="store_true", dest="realTime", default=Fals
 
 
 # Main Code Execution Below:
+checkIfRealTime()
+print realTime
