@@ -20,6 +20,9 @@ def checkIfRealTime():
 
 # Decide if real time is needed to be run:
 def runRealTime(var):
+	# Open an output file to write to:
+	writeToThis = open('scanReport.txt', 'w')
+
 	# Accept stdin if realTime is true:
 	if (var):
 		realTimeData = sys.stdin.readline()
@@ -30,7 +33,10 @@ def runRealTime(var):
 			inputFile = open(fileName, 'r')
 			fileLog = inputFile.read()
 			inputFile.close()
-			writeToFile(fileName)
+			#print fileName
+			writeToThis.write("%s -->\n" % fileName)
+
+	writeToThis.close()
 
 
 # Sort the files in the directory before reading them into code:
@@ -39,13 +45,6 @@ def numberFileSort(val):
 	parts = numbers.split(val)
 	parts[1::2] = map(int, parts[1::2])
 	return parts
-
-def writeToFile(writeThis):
-	outputFile = open('scanReport.txt', 'w')
-	outputFile.write("%s -->\n " % writeThis)
-	outputFile.close()
-
-
 
 ##############################################################
 
