@@ -6,6 +6,7 @@
 
 import re
 from optparse import OptionParser
+import sys
 
 
 
@@ -14,7 +15,19 @@ from optparse import OptionParser
 # Checking to see if the analytics are to be done real-time or with log files:
 def checkIfRealTime():
 	parser = OptionParser()
-	parser.add_option("--online", action="store_true", dest="realTime", default=False)
+	parser.add_option("--online", action="store_true", dest="realTime")
+	options,realTime = parser.parse_args()
+	return options.realTime
+
+# Accept stdin if realTime is true:
+def runRealTime(var):
+	if (var):
+		realTimeData = sys.stdin.readline()
+		print var
+		return realTimeData
+	else:
+		print var
+
 
 
 
@@ -24,6 +37,5 @@ def checkIfRealTime():
 
 
 # Main Code Execution Below:
-realTime = False
-checkIfRealTime()
-print realTime
+realTimeFlag = checkIfRealTime()
+runRealTime(realTimeFlag)
