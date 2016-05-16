@@ -7,6 +7,7 @@
 import re
 from optparse import OptionParser
 import sys
+import glob
 
 
 
@@ -23,19 +24,23 @@ def checkIfRealTime():
 def runRealTime(var):
 	if (var):
 		realTimeData = sys.stdin.readline()
-		print var
 		return realTimeData
 	else:
-		print var
+		for inputFile in sorted(glob.glob('*.log'), key=numberFileSort):
+			print "You are analyzing: " + inputFile
 
 
+# Sort the files in the directory before reading them into code:
+numbers = re.compile(r'(\d+)')
+def numberFileSort(val):
+	parts = numbers.split(val)
+	parts[1::2] = map(int, parts[1::2])
+	return parts
 
 
-
-
-
-
+##############################################################
 
 # Main Code Execution Below:
+
 realTimeFlag = checkIfRealTime()
 runRealTime(realTimeFlag)
