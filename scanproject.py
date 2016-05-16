@@ -24,5 +24,6 @@ def checkIfRealTime():
 
 
 # Main Code Execution Below:
+realTime = False
 checkIfRealTime()
 print realTime
