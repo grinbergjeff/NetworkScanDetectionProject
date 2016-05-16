@@ -9,8 +9,6 @@ from optparse import OptionParser
 import sys
 import glob
 
-
-
 # Function Declarations will appear below:
 
 # Checking to see if the analytics are to be done real-time or with log files:
@@ -20,14 +18,19 @@ def checkIfRealTime():
 	options,realTime = parser.parse_args()
 	return options.realTime
 
-# Accept stdin if realTime is true:
+# Decide if real time is needed to be run:
 def runRealTime(var):
+	# Accept stdin if realTime is true:
 	if (var):
 		realTimeData = sys.stdin.readline()
 		return realTimeData
 	else:
-		for inputFile in sorted(glob.glob('*.log'), key=numberFileSort):
-			print "You are analyzing: " + inputFile
+		for fileName in sorted(glob.glob('*.log'), key=numberFileSort):
+			# For each file, I need to read it in and output the file name:
+			inputFile = open(fileName, 'r')
+			fileLog = inputFile.read()
+			inputFile.close()
+			writeToFile(fileName)
 
 
 # Sort the files in the directory before reading them into code:
@@ -36,6 +39,12 @@ def numberFileSort(val):
 	parts = numbers.split(val)
 	parts[1::2] = map(int, parts[1::2])
 	return parts
+
+def writeToFile(writeThis):
+	outputFile = open('scanReport.txt', 'w')
+	outputFile.write("%s -->\n " % writeThis)
+	outputFile.close()
+
 
 
 ##############################################################
