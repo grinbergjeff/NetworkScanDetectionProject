@@ -40,6 +40,31 @@ def runOffline():
 			fileLog = inputFile.read()
 			inputFile.close()
 			writeToThis.write("%s -->\n" % fileName)
+
+			# Identification of NMAP performed executed below:
+			
+			#Nmap flag initializers:
+			nmapsS = 0
+			nmapF = 0
+			nmapsV = 0
+			nmapO = 0
+			nmapsn = 0
+
+			# Go through every fileLog we have and dig inside to find all the
+			# lines that have a typical identifier with NMAP scans:
+			# 'ARP, Reply, #.#.#.#, length 28'
+			# and look for the request that was made before it:
+			logLine = fileLog.split('\n')
+			for index, lineInfo in enumerate(logLine):
+				# Set a counter that looks for every time an attacker IP address shows
+				attackerIP = 0
+				if ('ARP, Request ' in lineInfo and 'length 46' in lineInfo):
+					print lineInfo
+
+
+
+
+
 	writeToThis.close()
 
 
