@@ -19,23 +19,27 @@ def checkIfRealTime():
 	return options.realTime
 
 # Decide if real time is needed to be run:
-def runRealTime(var):
-	# Open an output file to write to:
-	writeToThis = open('scanReport.txt', 'w')
-
+def OnlineOrOffline(var):
 	# Accept stdin if realTime is true:
 	if (var):
-		realTimeData = sys.stdin.readline()
-		return realTimeData
+		runOnline()
 	else:
-		for fileName in sorted(glob.glob('*.log'), key=numberFileSort):
-			# For each file, I need to read it in and output the file name:
+		runOffline()
+
+# The code that will run if the program is required to run in real-time
+def runOnline():
+	realTimeData = sys.stdin.readline()
+	return realTimeData
+
+# The code that will run if the program is not required to run online:
+def runOffline():
+	# Open an output file to write to:
+	writeToThis = open('scanReport.txt', 'w')
+	for fileName in sorted(glob.glob('*.log'), key=numberFileSort):
 			inputFile = open(fileName, 'r')
 			fileLog = inputFile.read()
 			inputFile.close()
-			#print fileName
 			writeToThis.write("%s -->\n" % fileName)
-
 	writeToThis.close()
 
 
@@ -51,4 +55,4 @@ def numberFileSort(val):
 # Main Code Execution Below:
 
 realTimeFlag = checkIfRealTime()
-runRealTime(realTimeFlag)
+OnlineOrOffline(realTimeFlag)
