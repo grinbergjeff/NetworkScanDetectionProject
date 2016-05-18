@@ -61,15 +61,13 @@ def runOffline():
 				attackerIP = 0
 				reverseItr = 0
 				timeStamp = None
-				timeStampClean = None
-				victimIP = None
-				attackIP = None
+				
 				if ('ARP, Reply ' in lineInfo and 'length 46' in lineInfo):
 					# Go back and find the ARP, request that gave forced this reply:
 					reverseItr = index
 					reverseItrInfo = lineInfo
-					while (reverseItr != 0):
-						if 'ARP, Request' in reverseItrInfo:
+					while (True):
+						if 'ARP, Request' in reverseItrInfo or reverseItr == 0:
 							break
 						else:
 							reverseItr = reverseItr - 1
@@ -80,30 +78,31 @@ def runOffline():
 					print "		Scanned from %s at %s" % (attackIP, timeStampClean)
 
 
-
 	writeToThis.close()
 
 def returnRightData(reverseItrInfo):
+	timeStampClean = None
+	victimIP = None
+	attackIP = None
 	# The scanRequest is identified as: 
 	# Timestamp 'ARP, Request who-has' VICTIM-IP 'tell' ATTACK-IP, 'length 46'
 	# Store this information:
 	if '(Broadcast)' in reverseItrInfo:
 		request_split= reverseItrInfo.split( )
 		timeStamp = request_split[0]
-		timeStampClean = timeStamp[:-7]
+		timeStampClean = timeStamp#[:-7]
 		victimIP = request_split[4]
 		attackIP = request_split[7][:-1]
 	elif '(oui' in reverseItrInfo:
 		request_split= reverseItrInfo.split( )
 		timeStamp = request_split[0]
-		timeStampClean = timeStamp[:-7]
+		timeStampClean = timeStamp#[:-7]
 		victimIP = request_split[4]
 		attackIP = request_split[9][:-1]
-		print 'oui: %s \n %s' % (victimIP , attackIP)
 	else:
 		request_split= reverseItrInfo.split( )
 		timeStamp = request_split[0]
-		timeStampClean = timeStamp[:-7]
+		timeStampClean = timeStamp#[:-7]
 		victimIP = request_split[4]
 		attackIP = request_split[6][:-1]
 	return timeStampClean, victimIP, attackIP
