@@ -59,32 +59,54 @@ def runOffline():
 			for index, lineInfo in enumerate(logLine):
 				# Set a counter that looks for every time an attacker IP address shows
 				attackerIP = 0
-				scanRequest = None
+				reverseItr = 0
+				timeStamp = None
+				timeStampClean = None
+				victimIP = None
+				attackIP = None
 				if ('ARP, Reply ' in lineInfo and 'length 46' in lineInfo):
 					# Go back and find the ARP, request that gave forced this reply:
-					for i in reversed(logLine[index:]):
-						print i
-						if ('ARP, Request ' in i):
-							scanRequest = i
-							#print i
-							# The scanRequest is identified as: 
-							# Timestamp 'ARP, Request who-has' VICTIM-IP 'tell' ATTACK-IP, 'length 46'
-							# Store this information:
-							request_split= scanRequest.split( )
-							timeStamp = request_split[0]
-							timeStampClean = timeStamp[:-7]
-							victimIP = request_split[4]
-							attackIP = request_split[6][:-1]
-							#writeToThis.write("		Scanned from %s at %s" % attackIP, timeStampClean)
-							#print "		Scanned from %s at %s" % (attackIP, timeStampClean)
+					reverseItr = index
+					reverseItrInfo = lineInfo
+					while (reverseItr != 0):
+						if 'ARP, Request' in reverseItrInfo:
 							break
+						else:
+							reverseItr = reverseItr - 1
+							reverseItrInfo = logLine[reverseItr]
 
-
-
+					timeStampClean, victimIP, attackIP = returnRightData(reverseItrInfo)
+					writeToThis.write("		Scanned from %s at %s" % (attackIP, timeStampClean))
+					print "		Scanned from %s at %s" % (attackIP, timeStampClean)
 
 
 
 	writeToThis.close()
+
+def returnRightData(reverseItrInfo):
+	# The scanRequest is identified as: 
+	# Timestamp 'ARP, Request who-has' VICTIM-IP 'tell' ATTACK-IP, 'length 46'
+	# Store this information:
+	if '(Broadcast)' in reverseItrInfo:
+		request_split= reverseItrInfo.split( )
+		timeStamp = request_split[0]
+		timeStampClean = timeStamp[:-7]
+		victimIP = request_split[4]
+		attackIP = request_split[7][:-1]
+	elif '(oui' in reverseItrInfo:
+		request_split= reverseItrInfo.split( )
+		timeStamp = request_split[0]
+		timeStampClean = timeStamp[:-7]
+		victimIP = request_split[4]
+		attackIP = request_split[9][:-1]
+		print 'oui: %s \n %s' % (victimIP , attackIP)
+	else:
+		request_split= reverseItrInfo.split( )
+		timeStamp = request_split[0]
+		timeStampClean = timeStamp[:-7]
+		victimIP = request_split[4]
+		attackIP = request_split[6][:-1]
+	return timeStampClean, victimIP, attackIP
 
 
 # Sort the files in the directory before reading them into code:
