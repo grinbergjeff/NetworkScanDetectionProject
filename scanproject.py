@@ -66,8 +66,16 @@ def runOffline():
 					# Go back and find the ARP, request that gave forced this reply:
 					reverseItr = index
 					reverseItrInfo = lineInfo
+					# Get the IP in the reply log and save it. Will need to compare to the requests to make sure
+					# a match was found and the filter is looking properly for replies
+					replyLine = lineInfo.split( )
+					replyIP = replyLine[3]
+					print "reply IP is: %s" % replyIP
 					while (True):
-						if 'ARP, Request' in reverseItrInfo or reverseItr == 0:
+						if 'ARP, Request' in reverseItrInfo: #or reverseItr == 0:
+							if reverseItrInfo.find(str(replyIP)):
+								break
+						elif reverseItr == 0:
 							break
 						else:
 							reverseItr = reverseItr - 1
