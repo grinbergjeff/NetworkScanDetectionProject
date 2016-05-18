@@ -66,16 +66,19 @@ def runOffline():
 					# Go back and find the ARP, request that gave forced this reply:
 					reverseItr = index
 					reverseItrInfo = lineInfo
+					#print "\nFound reply INDEX = %s" %index
 					# Get the IP in the reply log and save it. Will need to compare to the requests to make sure
 					# a match was found and the filter is looking properly for replies
 					replyLine = lineInfo.split( )
 					replyIP = replyLine[3]
-					print "reply IP is: %s" % replyIP
+					#print "reply IP is: %s" % replyIP
 					while (True):
-						if 'ARP, Request' in reverseItrInfo: #or reverseItr == 0:
-							if reverseItrInfo.find(str(replyIP)):
+						if 'ARP, Request' in reverseItrInfo:
+							if returnVictimIP(reverseItrInfo) == replyIP :
+								#print "REQUEST INDEX: %s" % reverseItr
+								#print reverseItrInfo
 								break
-						elif reverseItr == 0:
+						if reverseItr == 0:
 							break
 						else:
 							reverseItr = reverseItr - 1
@@ -114,6 +117,33 @@ def returnRightData(reverseItrInfo):
 		victimIP = request_split[4]
 		attackIP = request_split[6][:-1]
 	return timeStampClean, victimIP, attackIP
+
+# Function that checks if the Reply IP is found in the Request ARP
+def returnVictimIP(reverseItrInfo):
+	timeStampClean = None
+	victimIP = None
+	attackIP = None
+	if '(Broadcast)' in reverseItrInfo:
+		request_split= reverseItrInfo.split( )
+		timeStamp = request_split[0]
+		timeStampClean = timeStamp#[:-7]
+		victimIP = request_split[4]
+		attackIP = request_split[7][:-1]
+	elif '(oui' in reverseItrInfo:
+		request_split= reverseItrInfo.split( )
+		timeStamp = request_split[0]
+		timeStampClean = timeStamp#[:-7]
+		victimIP = request_split[4]
+		attackIP = request_split[9][:-1]
+	else:
+		request_split= reverseItrInfo.split( )
+		timeStamp = request_split[0]
+		timeStampClean = timeStamp#[:-7]
+		victimIP = request_split[4]
+		attackIP = request_split[6][:-1]
+
+	return victimIP
+
 
 
 # Sort the files in the directory before reading them into code:
