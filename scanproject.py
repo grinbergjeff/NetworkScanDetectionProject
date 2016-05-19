@@ -37,6 +37,8 @@ def OnlineOrOffline(var):
 # The code that will run if the program is required to run in real-time
 def runOnline():
 	writeToThis = open('scanReport.txt', 'w')
+	print 'Online: stdIn -->'
+	writeToThis.write('Online: stdIn --> \n')
 	# Since input is now a stream, I need to store it into a buffer.
 	inStreamBuffer = []
 	for line in sys.stdin:
@@ -55,7 +57,7 @@ def runOffline():
 		fileLog = inputFile.read()
 		inputFile.close()
 		writeToThis.write("%s -->\n" % fileName)
-		print "%s -->\n" % fileName
+		print "%s -->" % fileName
 
 		# Identification of NMAP performed executed below:
 		
