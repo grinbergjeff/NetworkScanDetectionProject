@@ -107,17 +107,31 @@ def getCorrectInfo(logLine, writeToThis):
 
 			# Look for ICMP echo request with the right request made to the victim ip, this indicates
 			# that this was nmap -O scan:
-			writeScan = False
+			writeNmapO = False
+			portNumbersStored = []
 			for nIndex, nmapInfo in enumerate(logLine):
 				if nmapInfo.find(attackIP + ' > ' + victimIP + ': ICMP echo request,') != -1:
 					writeNmapO = True
 					nmapO = 1
 					break
-
-
-			if writeScan == True:
+				# Count the number of ports to identify if it was a -sS or -F scan.
+				elif (victimIP in nmapInfo) and ('>' in nmapInfo):
+					nmapSplit = nmapInfo.split( )
+					ipSplit = nmapSplit[2].split('.')
+					if len(ipSplit) == 5:
+						portNumber = ipSplit[4]
+						if portNumber not in portNumbersStored:
+							portNumbersStored.append(portNumber)
+			print len(portNumbersStored)
+			if len(portNumbersStored) < 150:
+				writeToThis.write("		nmap -F from %s at %s\n" % (attackIP, timeStampClean))
+				print "		nmap -F from %s at %s" % (attackIP, timeStampClean)
+			elif writeNmapO == True:
 				writeToThis.write("		nmap -O from %s at %s\n" % (attackIP, timeStampClean))
 				print "		nmap -O from %s at %s" % (attackIP, timeStampClean)
+			elif len(portNumbersStored) > 1000:
+				writeToThis.write("		nmap -sS or -sV from %s at %s\n" % (attackIP, timeStampClean))
+				print "		nmap -sS or -sV from %s at %s" % (attackIP, timeStampClean)
 			else:
 				writeToThis.write("		Scanned from %s at %s\n" % (attackIP, timeStampClean))
 				print "		Scanned from %s at %s" % (attackIP, timeStampClean)
