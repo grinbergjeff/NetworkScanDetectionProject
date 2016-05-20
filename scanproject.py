@@ -87,12 +87,10 @@ def getCorrectInfo(logLine, writeToThis):
 			# Go back and find the ARP, request that gave forced this reply:
 			reverseItr = index
 			reverseItrInfo = lineInfo
-			#print "\nFound reply INDEX = %s" %index
 			# Get the IP in the reply log and save it. Will need to compare to the requests to make sure
 			# a match was found and the filter is looking properly for replies
 			replyLine = lineInfo.split( )
 			replyIP = replyLine[3]
-			#print "reply IP is: %s" % replyIP
 			while (True):
 				if 'ARP, Request' in reverseItrInfo:
 					if returnVictimIP(reverseItrInfo) == replyIP :
@@ -123,7 +121,7 @@ def getCorrectInfo(logLine, writeToThis):
 						if portNumber not in portNumbersStored:
 							portNumbersStored.append(portNumber)
 			print len(portNumbersStored)
-			if len(portNumbersStored) < 150:
+			if len(portNumbersStored) < 150 and nmapO == False:
 				writeToThis.write("		nmap -F from %s at %s\n" % (attackIP, timeStampClean))
 				print "		nmap -F from %s at %s" % (attackIP, timeStampClean)
 			elif writeNmapO == True:
@@ -135,7 +133,6 @@ def getCorrectInfo(logLine, writeToThis):
 			else:
 				writeToThis.write("		Scanned from %s at %s\n" % (attackIP, timeStampClean))
 				print "		Scanned from %s at %s" % (attackIP, timeStampClean)
-
 
 def returnRightData(reverseItrInfo):
 	timeStampClean = None
