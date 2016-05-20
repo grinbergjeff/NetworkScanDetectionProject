@@ -59,15 +59,6 @@ def runOffline():
 		writeToThis.write("%s -->\n" % fileName)
 		print "%s -->" % fileName
 
-		# Identification of NMAP performed executed below:
-		
-		#Nmap flag initializers:
-		nmapsS = 0
-		nmapF = 0
-		nmapsV = 0
-		nmapO = 0
-		nmapsn = 0
-
 		# Go through every fileLog we have and dig inside to find all the
 		# lines that have a typical identifier with NMAP scans:
 		# 'ARP, Reply, #.#.#.#, length 28'
@@ -77,6 +68,11 @@ def runOffline():
 	writeToThis.close()
 
 def getCorrectInfo(logLine, writeToThis):
+	# Nmap identifiers
+	writeNmapO = False
+	writeNmapF = False
+	writeNmapsSsV = False
+
 	for index, lineInfo in enumerate(logLine):
 		# Set a counter that looks for every time an attacker IP address shows
 		attackerIP = 0
@@ -105,14 +101,12 @@ def getCorrectInfo(logLine, writeToThis):
 
 			# Look for ICMP echo request with the right request made to the victim ip, this indicates
 			# that this was nmap -O scan:
-			writeNmapO = False
 			portNumbersStored = []
 			for nIndex, nmapInfo in enumerate(logLine):
 				if nmapInfo.find(attackIP + ' > ' + victimIP + ': ICMP echo request,') != -1:
 					writeNmapO = True
-					nmapO = 1
 					break
-				# Count the number of ports to identify if it was a -sS or -F scan.
+				# Count the number of ports to identify if it was a -sS, -sV or -F scan.
 				elif (victimIP in nmapInfo) and ('>' in nmapInfo):
 					nmapSplit = nmapInfo.split( )
 					ipSplit = nmapSplit[2].split('.')
@@ -120,14 +114,19 @@ def getCorrectInfo(logLine, writeToThis):
 						portNumber = ipSplit[4]
 						if portNumber not in portNumbersStored:
 							portNumbersStored.append(portNumber)
-			print len(portNumbersStored)
-			if len(portNumbersStored) < 150 and nmapO == False:
-				writeToThis.write("		nmap -F from %s at %s\n" % (attackIP, timeStampClean))
-				print "		nmap -F from %s at %s" % (attackIP, timeStampClean)
-			elif writeNmapO == True:
+
+			if len(portNumbersStored) < 150:
+				writeNmapF = True
+			elif len(portNumbersStored) > 1000:
+				writeNmapsSsV = True
+
+			if writeNmapO == True:
 				writeToThis.write("		nmap -O from %s at %s\n" % (attackIP, timeStampClean))
 				print "		nmap -O from %s at %s" % (attackIP, timeStampClean)
-			elif len(portNumbersStored) > 1000:
+			elif writeNmapF == True and writeNmapO == False and writeNmapsSsV == False:
+				writeToThis.write("		nmap -F from %s at %s\n" % (attackIP, timeStampClean))
+				print "		nmap -F from %s at %s" % (attackIP, timeStampClean)
+			elif writeNmapsSsV == True and writeNmapO == False:
 				writeToThis.write("		nmap -sS or -sV from %s at %s\n" % (attackIP, timeStampClean))
 				print "		nmap -sS or -sV from %s at %s" % (attackIP, timeStampClean)
 			else:
@@ -186,8 +185,6 @@ def returnVictimIP(reverseItrInfo):
 		attackIP = request_split[6][:-1]
 
 	return victimIP
-
-#def returnScanType():
 
 
 ##############################################################
