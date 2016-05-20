@@ -59,6 +59,15 @@ def runOffline():
 		writeToThis.write("%s -->\n" % fileName)
 		print "%s -->" % fileName
 
+		# Identification of NMAP performed executed below:
+		
+		#Nmap flag initializers:
+		nmapsS = 0
+		nmapF = 0
+		nmapsV = 0
+		nmapO = 0
+		nmapsn = 0
+
 		# Go through every fileLog we have and dig inside to find all the
 		# lines that have a typical identifier with NMAP scans:
 		# 'ARP, Reply, #.#.#.#, length 28'
@@ -78,10 +87,12 @@ def getCorrectInfo(logLine, writeToThis):
 			# Go back and find the ARP, request that gave forced this reply:
 			reverseItr = index
 			reverseItrInfo = lineInfo
+			#print "\nFound reply INDEX = %s" %index
 			# Get the IP in the reply log and save it. Will need to compare to the requests to make sure
 			# a match was found and the filter is looking properly for replies
 			replyLine = lineInfo.split( )
 			replyIP = replyLine[3]
+			#print "reply IP is: %s" % replyIP
 			while (True):
 				if 'ARP, Request' in reverseItrInfo:
 					if returnVictimIP(reverseItrInfo) == replyIP :
@@ -93,8 +104,23 @@ def getCorrectInfo(logLine, writeToThis):
 					reverseItrInfo = logLine[reverseItr]
 
 			timeStampClean, victimIP, attackIP = returnRightData(reverseItrInfo)
-			writeToThis.write("		Scanned from %s at %s\n" % (attackIP, timeStampClean))
-			print "		Scanned from %s at %s" % (attackIP, timeStampClean)
+
+			# Look for ICMP echo request with the right request made to the victim ip, this indicates
+			# that this was nmap -O scan:
+			writeScan = False
+			for nIndex, nmapInfo in enumerate(logLine):
+				if nmapInfo.find(attackIP + ' > ' + victimIP + ': ICMP echo request,') != -1:
+					writeNmapO = True
+					nmapO = 1
+					break
+
+
+			if writeScan == True:
+				writeToThis.write("		nmap -O from %s at %s\n" % (attackIP, timeStampClean))
+				print "		nmap -O from %s at %s" % (attackIP, timeStampClean)
+			else:
+				writeToThis.write("		Scanned from %s at %s\n" % (attackIP, timeStampClean))
+				print "		Scanned from %s at %s" % (attackIP, timeStampClean)
 
 
 def returnRightData(reverseItrInfo):
@@ -149,6 +175,8 @@ def returnVictimIP(reverseItrInfo):
 		attackIP = request_split[6][:-1]
 
 	return victimIP
+
+#def returnScanType():
 
 
 ##############################################################
