@@ -123,15 +123,19 @@ def getCorrectInfo(logLine, writeToThis):
 			if writeNmapO == True:
 				writeToThis.write("		nmap -O from %s at %s\n" % (attackIP, timeStampClean))
 				print "		nmap -O from %s at %s" % (attackIP, timeStampClean)
+				break
 			elif writeNmapF == True and writeNmapO == False and writeNmapsSsV == False:
 				writeToThis.write("		nmap -F from %s at %s\n" % (attackIP, timeStampClean))
 				print "		nmap -F from %s at %s" % (attackIP, timeStampClean)
+				break
 			elif writeNmapsSsV == True and writeNmapO == False:
 				writeToThis.write("		nmap -sS or -sV from %s at %s\n" % (attackIP, timeStampClean))
 				print "		nmap -sS or -sV from %s at %s" % (attackIP, timeStampClean)
+				break
 			else:
 				writeToThis.write("		Scanned from %s at %s\n" % (attackIP, timeStampClean))
 				print "		Scanned from %s at %s" % (attackIP, timeStampClean)
+				break
 
 def returnRightData(reverseItrInfo):
 	timeStampClean = None
