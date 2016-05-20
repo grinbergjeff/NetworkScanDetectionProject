@@ -59,15 +59,6 @@ def runOffline():
 		writeToThis.write("%s -->\n" % fileName)
 		print "%s -->" % fileName
 
-		# Identification of NMAP performed executed below:
-		
-		#Nmap flag initializers:
-		nmapsS = 0
-		nmapF = 0
-		nmapsV = 0
-		nmapO = 0
-		nmapsn = 0
-
 		# Go through every fileLog we have and dig inside to find all the
 		# lines that have a typical identifier with NMAP scans:
 		# 'ARP, Reply, #.#.#.#, length 28'
@@ -87,17 +78,13 @@ def getCorrectInfo(logLine, writeToThis):
 			# Go back and find the ARP, request that gave forced this reply:
 			reverseItr = index
 			reverseItrInfo = lineInfo
-			#print "\nFound reply INDEX = %s" %index
 			# Get the IP in the reply log and save it. Will need to compare to the requests to make sure
 			# a match was found and the filter is looking properly for replies
 			replyLine = lineInfo.split( )
 			replyIP = replyLine[3]
-			#print "reply IP is: %s" % replyIP
 			while (True):
 				if 'ARP, Request' in reverseItrInfo:
 					if returnVictimIP(reverseItrInfo) == replyIP :
-						#print "REQUEST INDEX: %s" % reverseItr
-						#print reverseItrInfo
 						break
 				if reverseItr == 0:
 					break
@@ -162,8 +149,6 @@ def returnVictimIP(reverseItrInfo):
 		attackIP = request_split[6][:-1]
 
 	return victimIP
-
-#def returnScanType():
 
 
 ##############################################################
